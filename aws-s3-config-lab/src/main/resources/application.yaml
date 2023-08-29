@@ -11,3 +11,8 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
+
+cloud:
+  aws:
+    s3:
+      bucketName: ugps-test
