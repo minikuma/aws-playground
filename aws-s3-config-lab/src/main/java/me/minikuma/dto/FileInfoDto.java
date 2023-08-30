@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +15,6 @@ public class FileInfoDto {
     public static class FileInfoResponse {
         private String fileName;
         private LocalDateTime dateTime;
-        private List<String> uploadUrl = new ArrayList<>();
+        private List<String> uploadUrl;
     }
 }

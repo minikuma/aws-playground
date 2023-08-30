@@ -1,11 +1,10 @@
 package me.minikuma.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sts.StsClient;
@@ -20,8 +19,17 @@ public class AwsS3ConfigV1 {
     /**
      * Assume Role 기반 인증
      *  - ~./aws/credentials 파일 필요
-     *  - 자동 갱신 가능한 구조
+     *  - 자동 갱신
      * */
+
+    @Value("${cloud.aws.s3.role-arn}")
+    private String roleArn;
+
+    @Value("${cloud.aws.s3.role-session}")
+    private String roleSessionName;
+
+    @Value("${cloud.aws.s3.duration}")
+    private int duration;
 
     @Bean
     public S3Client s3Client() {
@@ -31,28 +39,26 @@ public class AwsS3ConfigV1 {
     }
 
     @Bean
-    public AwsCredentialsProvider stsAssumeRoleCredentialsProvider() {
-        StsClient stsClient = StsClient.builder()
+    public StsClient stsClient() {
+        return StsClient.builder()
                 .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
+    }
 
+    @Bean
+    public StsAssumeRoleCredentialsProvider stsAssumeRoleCredentialsProvider() {
         AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
-                .roleArn("arn:aws:iam::985984781526:role/ugps-role-test")
-                .roleSessionName("ugps-s3-test")
-                .durationSeconds(900)
+                .roleArn(roleArn)
+                .roleSessionName(roleSessionName)
+                .durationSeconds(duration)
                 .build();
 
         StsAssumeRoleCredentialsProvider stsAssumeCredentials = StsAssumeRoleCredentialsProvider.builder()
-                .stsClient(stsClient)
+                .stsClient(stsClient())
                 .refreshRequest(assumeRoleRequest)
                 .asyncCredentialUpdateEnabled(true)
                 .build();
 
-        AwsCredentials tempAwsCredentials = stsAssumeCredentials.resolveCredentials();
-        AwsCredentialsProvider awsCredentialsProvider = () -> tempAwsCredentials;
-
-        log.info("access key {}", awsCredentialsProvider.resolveCredentials().accessKeyId());
-
-        return awsCredentialsProvider;
+        return stsAssumeCredentials;
     }
 }

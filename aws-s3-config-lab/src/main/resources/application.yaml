@@ -11,8 +11,12 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
+    root: info
 
 cloud:
   aws:
     s3:
-      bucketName: ugps-test
+      bucketName: # bucket name
+      role-arn: # role arn
+      role-session: # role session name
+      duration: # duration

@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AwsS3Service {
     private final S3Client s3Client;
+    private final StsAssumeRoleCredentialsProvider provider;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -42,7 +44,6 @@ public class AwsS3Service {
         try (InputStream in = file.getInputStream()) {
             RequestBody requestBody = RequestBody.fromInputStream(in, file.getSize());
             s3Client.putObject(putObjectRequest, requestBody);
-
         } catch (IOException ie) {
             throw new IOException("Upload Error");
         }
@@ -51,7 +52,7 @@ public class AwsS3Service {
 
         S3Utilities s3Utilities = s3Client.utilities();
         GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                .bucket("ugps-test")
+                .bucket(bucketName)
                 .key(fileName)
                 .build();
 
