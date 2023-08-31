@@ -12,7 +12,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AwsS3Service {
     private final S3Client s3Client;
-    private final StsAssumeRoleCredentialsProvider provider;
 
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
@@ -57,7 +55,6 @@ public class AwsS3Service {
                 .build();
 
         URL url = s3Utilities.getUrl(getUrlRequest);
-
         uploadUrl.add(url.toString());
 
         return new FileInfoDto.FileInfoResponse(fileName, LocalDateTime.now(), uploadUrl);
