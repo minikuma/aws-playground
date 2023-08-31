@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.minikuma.dto.FileInfoDto;
 import me.minikuma.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -23,6 +24,7 @@ import java.util.Objects;
 
 @Slf4j
 @Service
+@Profile("v1")
 @RequiredArgsConstructor
 public class AwsS3Service {
     private final S3Client s3Client;
@@ -41,7 +43,11 @@ public class AwsS3Service {
 
         try (InputStream in = file.getInputStream()) {
             RequestBody requestBody = RequestBody.fromInputStream(in, file.getSize());
+            long startTime = System.currentTimeMillis();
+            log.info("start time {}", startTime + " ms");
             s3Client.putObject(putObjectRequest, requestBody);
+            long endTime = System.currentTimeMillis();
+            log.info("end time {}, elapsed time {}", endTime + " ms", endTime - startTime + " ms");
         } catch (IOException ie) {
             throw new IOException("Upload Error");
         }

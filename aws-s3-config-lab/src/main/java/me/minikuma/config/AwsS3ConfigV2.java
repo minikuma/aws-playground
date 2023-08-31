@@ -6,19 +6,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
-@Profile("v1")
+@Profile("v2")
 @Configuration
-public class AwsS3ConfigV1 {
+public class AwsS3ConfigV2 {
     /**
      *  (1) Assume Role 기반 인증
      *  - ~./aws/credentials 파일 필요
      *  - 자동 갱신
-     *  (2) S3Client Sync Access
+     *  (2) S3AsyncClient async Access
      *
      * */
 
@@ -32,13 +33,22 @@ public class AwsS3ConfigV1 {
     private int duration;
 
     @Bean
-    public S3Client s3Client() {
-        return S3Client.builder()
+    public S3AsyncClient s3AsyncClient() {
+        return S3AsyncClient.crtBuilder()
                 .credentialsProvider(stsAssumeRoleCredentialsProvider())
                 .region(Region.AP_NORTHEAST_2)
+                .targetThroughputInGbps(20.0)
                 .build();
     }
 
+    @Bean
+    public S3TransferManager s3TransferManager() {
+        return S3TransferManager.builder()
+                .s3Client(s3AsyncClient())
+                .build();
+    }
+
+    // STS Assume Role 사용
     @Bean
     public StsClient stsClient() {
         return StsClient.builder()

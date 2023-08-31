@@ -1,4 +1,4 @@
-# local
+# v2
 spring:
   servlet:
     multipart:
@@ -15,10 +15,11 @@ logging:
     root: info
     software.amazon.awssdk: debug
 
+
 cloud:
   aws:
     s3:
-      bucketName:    # bucket name
-      role-arn:      # role arn
-      role-session:  # role session name
-      duration:      # duration
+      bucketName: ugps-test   # bucket name
+      role-arn: arn:aws:iam::985984781526:role/ugps-role-test     # role arn
+      role-session: ugps-s3-test # role session name
+      duration: 900     # duration

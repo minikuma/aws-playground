@@ -1,0 +1,25 @@
+# v1
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+    root: info
+    software.amazon.awssdk: debug
+
+
+cloud:
+  aws:
+    s3:
+      bucketName: ugps-test   # bucket name
+      role-arn: arn:aws:iam::985984781526:role/ugps-role-test     # role arn
+      role-session: ugps-s3-test # role session name
+      duration: 900     # duration
