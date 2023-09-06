@@ -13,13 +13,14 @@ logging:
         util:
           EC2MetadataUtils: error
     root: info
-    software.amazon.awssdk: debug
-
+    software:
+      amazon:
+        awssdk: trace
 
 cloud:
   aws:
     s3:
-      bucketName:    # bucket name
-      role-arn:      # role arn
-      role-session:  # role session name
-      duration:      # duration
+      bucketName:   # bucket name
+      role-arn:     # role arn
+      role-session: # role session name
+      duration:     # duration

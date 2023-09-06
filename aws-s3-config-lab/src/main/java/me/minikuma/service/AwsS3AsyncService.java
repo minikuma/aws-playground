@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
@@ -69,5 +70,16 @@ public class AwsS3AsyncService {
         uploadUrl.add(resultUrl.toString());
 
         return new FileInfoDto.FileInfoResponse(fileName, LocalDateTime.now(), uploadUrl);
+    }
+
+    public FileInfoDto.FileInfoResponse deleteFile(String dir, String fileName) {
+        String key = dir + "/" + fileName;
+
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .build();
+        s3AsyncClient.deleteObject(request);
+        return new FileInfoDto.FileInfoResponse(key, LocalDateTime.now(), new ArrayList<>());
     }
 }

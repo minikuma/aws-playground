@@ -49,15 +49,14 @@ public class AwsS3ConfigV1 {
 
     @Bean
     public StsAssumeRoleCredentialsProvider stsAssumeRoleCredentialsProvider() {
-        AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
-                .roleArn(roleArn)
-                .roleSessionName(roleSessionName)
-                .durationSeconds(duration)
-                .build();
-
         return StsAssumeRoleCredentialsProvider.builder()
                 .stsClient(stsClient())
-                .refreshRequest(assumeRoleRequest)
+                .refreshRequest(() -> AssumeRoleRequest.builder()
+                                .roleArn(roleArn)
+                                .roleSessionName(roleSessionName)
+                                .durationSeconds(duration)
+                                .build()
+                )
                 .asyncCredentialUpdateEnabled(true)
                 .build();
     }

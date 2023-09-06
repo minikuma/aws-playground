@@ -5,8 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.client.config.ClientOption;
+import software.amazon.awssdk.core.client.config.SdkClientConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3ServiceClientConfiguration;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
@@ -34,10 +37,9 @@ public class AwsS3ConfigV2 {
 
     @Bean
     public S3AsyncClient s3AsyncClient() {
-        return S3AsyncClient.crtBuilder()
+        return S3AsyncClient.builder()
                 .credentialsProvider(stsAssumeRoleCredentialsProvider())
                 .region(Region.AP_NORTHEAST_2)
-                .targetThroughputInGbps(20.0)
                 .build();
     }
 
@@ -59,15 +61,14 @@ public class AwsS3ConfigV2 {
 
     @Bean
     public StsAssumeRoleCredentialsProvider stsAssumeRoleCredentialsProvider() {
-        AssumeRoleRequest assumeRoleRequest = AssumeRoleRequest.builder()
-                .roleArn(roleArn)
-                .roleSessionName(roleSessionName)
-                .durationSeconds(duration)
-                .build();
-
         return StsAssumeRoleCredentialsProvider.builder()
                 .stsClient(stsClient())
-                .refreshRequest(assumeRoleRequest)
+                .refreshRequest(() ->
+                        AssumeRoleRequest.builder().roleArn(roleArn)
+                                .roleSessionName(roleSessionName)
+                                .durationSeconds(duration)
+                                .build()
+                )
                 .asyncCredentialUpdateEnabled(true)
                 .build();
     }
