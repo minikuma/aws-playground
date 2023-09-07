@@ -12,7 +12,6 @@ import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.Upload;
 import software.amazon.awssdk.transfer.s3.model.UploadRequest;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.transfer.s3.model.UploadRequest;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,22 +36,22 @@ public class AwsS3AsyncService {
     private String bucketName;
 
     public FileInfoDto.FileInfoResponse asyncUpload(String dir, MultipartFile file) {
+
         String fileName = CommonUtils.convertFileName(dir, Objects.requireNonNull(file.getOriginalFilename()));
         log.info("Async Upload File Name = {}", fileName);
-
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
 
         AsyncRequestBody asyncRequestBody = AsyncRequestBody.fromString(fileName.split("/")[1]);
 
         UploadRequest uploadRequest = UploadRequest.builder()
-                .putObjectRequest(putObjectRequest)
+                .putObjectRequest(builder -> builder.bucket(bucketName)
+                        .key(fileName)
+                        .build()
+                )
                 .requestBody(asyncRequestBody)
                 .build();
 
         Upload upload = s3TransferManager.upload(uploadRequest);
+
         long startTIme = System.currentTimeMillis();
         log.info("Object Upload started....{}", startTIme);
 
@@ -60,26 +60,36 @@ public class AwsS3AsyncService {
         long endTime = System.currentTimeMillis();
         log.info("Object Upload finished {} elapsed time {}", endTime, endTime - startTIme);
 
-        GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
-        URL resultUrl = s3AsyncClient.utilities().getUrl(getUrlRequest);
+        URL resultUrl = s3AsyncClient.utilities().getUrl(
+                GetUrlRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileName)
+                        .build()
+        );
 
         List<String> uploadUrl = new ArrayList<>();
         uploadUrl.add(resultUrl.toString());
 
-        return new FileInfoDto.FileInfoResponse(fileName, LocalDateTime.now(), uploadUrl);
+        return FileInfoDto.FileInfoResponse.builder()
+                .dateTime(LocalDateTime.now())
+                .uploadUrl(uploadUrl)
+                .fileName(fileName)
+                .build();
     }
 
     public FileInfoDto.FileInfoResponse deleteFile(String dir, String fileName) {
         String key = dir + "/" + fileName;
-
-        DeleteObjectRequest request = DeleteObjectRequest.builder()
+        s3AsyncClient.deleteObject(
+                DeleteObjectRequest.builder()
                         .bucket(bucketName)
                         .key(key)
-                        .build();
-        s3AsyncClient.deleteObject(request);
-        return new FileInfoDto.FileInfoResponse(key, LocalDateTime.now(), new ArrayList<>());
+                        .build()
+        );
+
+        return FileInfoDto.FileInfoResponse.builder()
+                .fileName(key)
+                .dateTime(LocalDateTime.now())
+                .uploadUrl(Collections.EMPTY_LIST)
+                .build();
     }
 }

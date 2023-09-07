@@ -14,8 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AwsS3AsyncController {
     private final AwsS3AsyncService awsS3AsyncService;
 
-    // TODO: Async Upload 구현
-    @PostMapping("/async-uplaod")
+    @PostMapping("/async-upload")
     public ResponseEntity<?> asyncUpload(@RequestParam("dir") String directory,
                                         @RequestPart("file") MultipartFile multipartFile) {
         FileInfoDto.FileInfoResponse uploadResponse = awsS3AsyncService.asyncUpload(directory, multipartFile);

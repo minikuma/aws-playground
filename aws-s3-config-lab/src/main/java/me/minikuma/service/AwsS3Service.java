@@ -63,6 +63,10 @@ public class AwsS3Service {
         URL url = s3Utilities.getUrl(getUrlRequest);
         uploadUrl.add(url.toString());
 
-        return new FileInfoDto.FileInfoResponse(fileName, LocalDateTime.now(), uploadUrl);
+        return FileInfoDto.FileInfoResponse.builder()
+                .dateTime(LocalDateTime.now())
+                .fileName(fileName)
+                .uploadUrl(uploadUrl)
+                .build();
     }
 }

@@ -2,7 +2,9 @@ package me.minikuma.dto;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,8 +12,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class FileInfoDto {
-    @Data
-    @AllArgsConstructor
+
+    @Getter
+    @Builder
     public static class FileInfoResponse {
         private String fileName;
         private LocalDateTime dateTime;

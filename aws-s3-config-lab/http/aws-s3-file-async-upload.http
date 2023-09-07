@@ -1,0 +1,9 @@
+# s3 file async upload
+POST http://localhost:8080/async-upload/?dir=async-test
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="java.png"
+
+< /Users/jihoonjeon/Downloads/java.png
+--WebAppBoundary--
