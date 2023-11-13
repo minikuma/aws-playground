@@ -1,6 +1,6 @@
 package me.minikuma.utils;
 
-public final class CommonUtils {
+public class CommonUtils {
     private static final String FILE_EXTENSION_SEPARATOR = ".";
 
     private CommonUtils() {

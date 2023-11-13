@@ -24,7 +24,7 @@ public class AwsS3Controller {
 
     // TODO: upload 기능 구현
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("dir") String directory,
+    public ResponseEntity<FileInfoDto.FileInfoResponse> upload(@RequestParam("dir") String directory,
                                     @RequestPart("file")MultipartFile multipartFile) throws IOException {
         FileInfoDto.FileInfoResponse uploadResponse = awsS3Service.upload(directory, multipartFile);
         return ResponseEntity.ok(uploadResponse);

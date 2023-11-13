@@ -20,7 +20,6 @@ public class AwsS3ConfigV2 {
      *  - ~./aws/credentials 파일 필요
      *  - 자동 갱신
      *  (2) S3AsyncClient async Access
-     *
      * */
 
     @Value("${cloud.aws.s3.role-arn}")

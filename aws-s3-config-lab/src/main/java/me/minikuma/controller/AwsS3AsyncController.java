@@ -15,14 +15,14 @@ public class AwsS3AsyncController {
     private final AwsS3AsyncService awsS3AsyncService;
 
     @PostMapping("/async-upload")
-    public ResponseEntity<?> asyncUpload(@RequestParam("dir") String directory,
+    public ResponseEntity<FileInfoDto.FileInfoResponse> asyncUpload(@RequestParam("dir") String directory,
                                         @RequestPart("file") MultipartFile multipartFile) {
         FileInfoDto.FileInfoResponse uploadResponse = awsS3AsyncService.asyncUpload(directory, multipartFile);
         return ResponseEntity.ok(uploadResponse);
     }
 
     @DeleteMapping("/del")
-    public ResponseEntity<?> deleteFile(@RequestParam("dir") String directory,
+    public ResponseEntity<FileInfoDto.FileInfoResponse> deleteFile(@RequestParam("dir") String directory,
                                         @RequestParam("file") String fileName) {
         FileInfoDto.FileInfoResponse response = awsS3AsyncService.deleteFile(directory, fileName);
         return ResponseEntity.ok(response);

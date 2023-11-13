@@ -89,7 +89,7 @@ public class AwsS3AsyncService {
         return FileInfoDto.FileInfoResponse.builder()
                 .fileName(key)
                 .dateTime(LocalDateTime.now())
-                .uploadUrl(Collections.EMPTY_LIST)
+                .uploadUrl(Collections.emptyList())
                 .build();
     }
 }
